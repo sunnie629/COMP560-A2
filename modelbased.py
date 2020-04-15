@@ -51,9 +51,8 @@ while state != "In":
     newstate = random.choice(arr) # choose state based on probabilities 
 
     # transition probability : s, a, s'
-    print(a)
-    print(state)
-    
+    print(state + ' ' + a + ' ' + newstate)
+    state = newstate
     #(list(states[state][a].keys()))
     
     
