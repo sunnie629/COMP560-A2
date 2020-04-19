@@ -1,5 +1,14 @@
 import fileinput
 
+# formula for updating Q values in Q table:
+#         q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
+#             learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
+# np is the numpy library imported as: import numpy as np
+
+# formula for updating the explore rate over time:
+# exploration_rate = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
+#         np.exp(-exploration_decay_rate * episode)
+
 
 def accept_input():
     file_ = fileinput.input()  # reading file from STDIN
