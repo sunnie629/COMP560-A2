@@ -1,13 +1,32 @@
 import fileinput
+import numpy as np
 
 # formula for updating Q values in Q table:
 #         q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
 #             learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
-# np is the numpy library imported as: import numpy as np
 
 # formula for updating the explore rate over time:
 # exploration_rate = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
 #         np.exp(-exploration_decay_rate * episode)
+
+
+def create_q_table(states, actions):
+    return np.zeros((states, actions))
+
+
+def get_states(data):
+    states = []
+    for key in data.keys():
+        states.append(key)
+    return states
+
+
+def get_actions(data, states):
+    actions = set()
+    for state in states:
+        for action in data[state].keys():
+            actions.add(action)
+    return actions
 
 
 def accept_input():
