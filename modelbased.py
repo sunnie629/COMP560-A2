@@ -1,5 +1,9 @@
 # COMP560 A2 - MODEL BASED LEARNING // Sunnie Kwak
 # Goal: know the policy--> calculate transition and reward
+# keep track of how many times s' follows state s when you take action a
+# update transition probability after you're in the new end state
+# keep track of rewards after each step
+# estimate U(s) with bellman's equation for U(s)
 
 import fileinput
 import random

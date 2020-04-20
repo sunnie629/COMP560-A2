@@ -1,11 +1,17 @@
 # COMP560 A2 - MODEL FREE LEARNING // Sunnie Kwak
 # record each time starting posit, action took, and # of strokes to finish hole
 # Goal: learn the utility values
+# Q values tell us the value of doing action a in state s
+# get Utility values by taking max Q value given state0 and action ==> U(s) = max Q(s,a)
+
+# Bellman's equation for Q-value differs from Bellman's equation for utility values
+
 
 import functions
 import random
 import numpy as np
 import gym
+
 
 # curr state = "Fairway", a1 == s2
 # s2, a2 = s3
