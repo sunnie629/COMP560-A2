@@ -1,4 +1,5 @@
 # COMP560 A2 - MODEL BASED LEARNING // Sunnie Kwak
+# Goal: know the policy--> calculate transition and reward
 
 import fileinput
 import random

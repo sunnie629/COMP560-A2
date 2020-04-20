@@ -10,8 +10,23 @@ import numpy as np
 #         np.exp(-exploration_decay_rate * episode)
 
 
-def create_q_table(states, actions):
-    return np.zeros((states, actions))
+def create_q_table(states_length, actions_length):
+    return np.zeros((states_length, actions_length))
+
+
+def get_start_state(states):
+    return states[0]
+
+
+def get_terminal_state(data, states):
+    pass  # return the set difference of all available start states from total states
+
+
+def generate_pdf(state_probs):
+    probs = []
+    for key in state_probs.keys():
+        probs.append(state_probs[key])
+    return probs
 
 
 def get_states(data):
@@ -26,7 +41,7 @@ def get_actions(data, states):
     for state in states:
         for action in data[state].keys():
             actions.add(action)
-    return actions
+    return list(actions)
 
 
 def accept_input():
