@@ -5,6 +5,7 @@
 # get Utility values by taking max Q value given state0 and action ==> U(s) = max Q(s,a)
 
 # Bellman's equation for Q-value differs from Bellman's equation for utility values
+# R(s, a) ==> gives positive/negative value for reaching a certain state
 
 
 import functions
@@ -27,7 +28,7 @@ def explore(data, states, actions, q):
     curr_state = functions.get_start_state(states)
     terminal_state = "In"
     score = 0
-
+    i = 1
     while curr_state != terminal_state:  # each iteration of this loop == 1 step
 
         random_actions_available = list(data[curr_state].keys())  # will return all actions available to this state.
@@ -38,11 +39,14 @@ def explore(data, states, actions, q):
 
         # now, we have to use probabilities given to choose next state
         next_state = next_state_list[np.random.choice(len(next_state_dict), 1, p=probs)[0]]  # this might need len-1
+        score += functions.get_reward(next_state, i)
+        i += 1
         print(next_state)
 
         # TODO: calculations. These calculation will update the Q value for that state, action pair
         curr_state = next_state
-        #
+
+    print(score)
 
 
 def exploit(data, states, actions, q):
