@@ -7,53 +7,39 @@
 
 import fileinput
 import random
+import functions
 
-file_ = fileinput.input()  # reading file from STDIN
+def explore(transitions, states, data):
+    data = data 
+    iter = 1000 # number of iterations to record frequency
+    counter = 0
+    # each time record starting posit, action took, resulting state
+    for i in range(iter):
+        state = random.choice(states) 
+        while state != "In":
+            a = random.choice(list(data[state].keys())) # choose random action to take
 
-states = {} # dict of {s: {a : {s' : prob}}}
-start = True
-state = ""
-action = ""
-actions = {}
+            arr = [] # temp arr used to select result state
+            for x in data[state][a].keys():  # give weight to probabilities
+                num = data[state][a][x] * 100
+                for i in range(int(num)):
+                    arr.append(x)
+            newstate = random.choice(arr) # choose state based on probabilities
+            transitions[state][a].update({newstate : transitions[state][a][newstate] + 1}) # increase count of s,a,s' event
 
-# file reading & set up of states dictionary
-for x in file_:
-    word = x.split('/') 
-    states[word[0]] = {}
-file_ = fileinput.input()
-for x in file_:
-    word = x.split('/') 
-    if start:
-        state = word[0]
-        action = word[1]
-        states[word[0]].update({word[1]: {} })
-        start = False
-    if word[0] == state:
-        if word[1] == action:
-            states[word[0]][word[1]].update({word[2] : float(word[3].rstrip())})
-        else:
-            action = word[1]
-            states[word[0]].update({word[1]: {} })
-            states[word[0]][word[1]].update({word[2] : float(word[3].rstrip())})
-    else:
-        state = word[0]
-        action = word[1]
-        states[word[0]].update({word[1]: {} })
-        states[word[0]][word[1]].update({word[2] : float(word[3].rstrip())})
-state = "Fairway"
-# learning process
-# each time record starting posit, action took, resulting state
-while state != "In":
-    a = random.choice(list(states[state].keys())) # choose random action to take
+            # transition probability : s, a, s'
+            # print(state + ' ' + a + ' ' + newstate)
+            state = newstate
+            counter = counter + 1 # total number of runs
+    print(transitions)
+    print(counter)
 
-    arr = [] # temp arr used to select result state
-    for x in states[state][a].keys():  # give weight to probabilities
-        num = states[state][a][x] * 100
-        for i in range(int(num)):
-            arr.append(x)
-    newstate = random.choice(arr) # choose state based on probabilities
+def __main__():
+    data = functions.accept_input()  # initialize the dictionary with values from the .txt input
+    states = functions.get_states(data)  # states is a list
+    transitions = functions.transition_table_init() # dict that will store counts of each s,a,s' occurence 
+    explore(transitions, states, data)
+    
 
-    # transition probability : s, a, s'
-    print(state + ' ' + a + ' ' + newstate)
-    state = newstate
-    #(list(states[state][a].keys()))
+if __name__ == '__main__':
+    __main__()
