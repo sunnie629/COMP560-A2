@@ -36,6 +36,7 @@ def explore(data, states, actions, q):
         next_state_dict = data[curr_state][random_action]  # ==> return dictionary
         next_state_list = list(next_state_dict.keys())
         probs = functions.generate_pdf(next_state_dict)
+        print(probs)
 
         # now, we have to use probabilities given to choose next state
         next_state = next_state_list[np.random.choice(len(next_state_dict), 1, p=probs)[0]]  # this might need len-1
@@ -59,8 +60,7 @@ def explore(data, states, actions, q):
     # print(score)
 
 
-def exploit(data, states, actions, q):
-
+def exploit(data, states, actions, q): # pick action with max q val (max utility)
     pass
 
 

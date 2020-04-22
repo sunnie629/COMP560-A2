@@ -7,53 +7,63 @@
 
 import fileinput
 import random
+import functions
 
-file_ = fileinput.input()  # reading file from STDIN
+def explore(transition_prob, states, data):
+    data = data 
+    iter = 500 # number of iterations to record frequency; higher - more accurate
+    counter = 0
+    reward = 1 # 
+    transitions = functions.transition_table_init()
 
-states = {} # dict of {s: {a : {s' : prob}}}
-start = True
-state = ""
-action = ""
-actions = {}
+    # each time record starting posit, action took, resulting state
+    for i in range(iter):
+        state = random.choice(states) 
+        while state != "In":
+            a = random.choice(list(data[state].keys())) # choose random action to take
 
-# file reading & set up of states dictionary
-for x in file_:
-    word = x.split('/') 
-    states[word[0]] = {}
-file_ = fileinput.input()
-for x in file_:
-    word = x.split('/') 
-    if start:
-        state = word[0]
-        action = word[1]
-        states[word[0]].update({word[1]: {} })
-        start = False
-    if word[0] == state:
-        if word[1] == action:
-            states[word[0]][word[1]].update({word[2] : float(word[3].rstrip())})
-        else:
-            action = word[1]
-            states[word[0]].update({word[1]: {} })
-            states[word[0]][word[1]].update({word[2] : float(word[3].rstrip())})
-    else:
-        state = word[0]
-        action = word[1]
-        states[word[0]].update({word[1]: {} })
-        states[word[0]][word[1]].update({word[2] : float(word[3].rstrip())})
-state = "Fairway"
-# learning process
-# each time record starting posit, action took, resulting state
-while state != "In":
-    a = random.choice(list(states[state].keys())) # choose random action to take
+            arr = [] # temp arr used to select result state
+            for x in data[state][a].keys():  # give weight to probabilities
+                num = data[state][a][x] * 100
+                for i in range(int(num)):
+                    arr.append(x)
+            newstate = random.choice(arr) # choose state based on probabilities
+            
+            transitions[state][a].update({newstate : transitions[state][a][newstate] + 1}) # increase frequency of s,a,s'
+            # transition probability : s, a, s'
+            # print(state + ' ' + a + ' ' + newstate)
+            state = newstate
+            counter = counter + 1 # total number of runs
+    
+    # converting frequencies to transition probabilities
+    for s in transitions.keys():
+        for ac in transitions[s].keys():
+            reltotal = 0
+            for x in transitions[s][ac].keys():
+                reltotal = reltotal + transitions[s][ac][x]
+            if reltotal != 0:
+                for x in transitions[s][ac].keys():
+                    transition_prob[s][ac][x] = transitions[s][ac][x]/reltotal
+    print(transitions)
+    print(transition_prob)
+    print(counter)
 
-    arr = [] # temp arr used to select result state
-    for x in states[state][a].keys():  # give weight to probabilities
-        num = states[state][a][x] * 100
-        for i in range(int(num)):
-            arr.append(x)
-    newstate = random.choice(arr) # choose state based on probabilities
+  # TODO: exploitation
+def exploit():
+    pass
 
-    # transition probability : s, a, s'
-    print(state + ' ' + a + ' ' + newstate)
-    state = newstate
-    #(list(states[state][a].keys()))
+def __main__():
+    data = functions.accept_input()  # initialize the dictionary with values from the .txt input
+    states = functions.get_states(data)  # states is a list
+    transition_prob = functions.transition_table_init() # dict that will store the transition prob P(s'|s,a)
+    
+    # TODO: Add epsilon and discount value functionality
+  
+    discountval = 0 # 0 - immediate reward / 1 - later reward
+    epsilon = 0 # explore rate  
+    
+    explore(transition_prob, states, data)
+    
+
+if __name__ == '__main__':
+    __main__()
