@@ -90,13 +90,13 @@ def __main__():
     total_rewards = []
 
     #  100 episodes
-    for i in range(10000):
-        if random.uniform(0, 1) < epsilon:
-            explore(data, states, actions, q)
-        else:
-            exploit(data, states, actions, q)
-        epsilon = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
-            np.exp(-exploration_decay_rate * i)  # i denotes the current 'episode'
+    # for i in range(10000):
+    #     if random.uniform(0, 1) < epsilon:
+    #         explore(data, states, actions, q)
+    #     else:
+    #         exploit(data, states, actions, q)
+    #     epsilon = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
+    #         np.exp(-exploration_decay_rate * i)  # i denotes the current 'episode'
 
     print(q)
 

@@ -48,17 +48,24 @@ def get_reward(state, count):
 
 
 def get_states(data):
-    states = []
+    states = set()
     for key in data.keys():
-        states.append(key)
+        states.add(key)
+        for value in data[key].values():
+            for state in value.keys():
+                states.add(state)
+
     return states
 
 
 def get_actions(data, states):
     actions = set()
     for state in states:
-        for action in data[state].keys():
-            actions.add(action)
+        if data.get(state) is None:
+            continue
+        else:
+            for action in data[state].keys():
+                actions.add(action)
     return list(actions)
 
 
@@ -96,6 +103,7 @@ def accept_input():
             states[word[0]][word[1]].update({word[2] : float(word[3].rstrip())})
 
     return states
+
 
 def transition_table_init():
     file_ = fileinput.input()  # reading file from STDIN
