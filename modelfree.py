@@ -39,17 +39,28 @@ def explore(data, states, actions, q):
 
         # now, we have to use probabilities given to choose next state
         next_state = next_state_list[np.random.choice(len(next_state_dict), 1, p=probs)[0]]  # this might need len-1
-        score += functions.get_reward(next_state, i)
+        curr_reward = functions.get_reward(next_state, i)
+        score += curr_reward
         i += 1
-        print(next_state)
+        # define indices for Q table
+        state_index = states.index(curr_state)
+        action_index = actions.index(random_action)
 
         # TODO: calculations. These calculation will update the Q value for that state, action pair
+        if next_state == terminal_state:
+            q[state_index, action_index] = q[state_index, action_index] * (1 - 0.1)
+        else:
+            next_state_index = states.index(next_state)
+            q[state_index, action_index] = q[state_index, action_index] * (1 - 0.1) + \
+                0.1 * (curr_reward + .99 * np.max(q[next_state_index, :]))
+
         curr_state = next_state
 
-    print(score)
+    # print(score)
 
 
 def exploit(data, states, actions, q):
+
     pass
 
 
@@ -76,14 +87,18 @@ def __main__():
     min_exploration_rate = .01
     exploration_decay_rate = .01
 
+    total_rewards = []
+
     #  100 episodes
-    for i in range(1):
+    for i in range(10000):
         if random.uniform(0, 1) < epsilon:
             explore(data, states, actions, q)
         else:
             exploit(data, states, actions, q)
         epsilon = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
             np.exp(-exploration_decay_rate * i)  # i denotes the current 'episode'
+
+    print(q)
 
         # step 1: use epsilon to choose explore vs exploit
         # step 2: choose start state (randomly?)
