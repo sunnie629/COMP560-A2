@@ -22,10 +22,12 @@ import gym
 # s2
 # s3
 
-
-def explore(data, states, actions, q):
+# CONCLUSION: Q values only gets initialized if during an iteration, action takes s to s' where s' = Close/In
+# There must be some benefits of going to Left vs Same vs Over? What are we missing
+def explore(data, states, actions, q, lr, discount):
     # continue process until state == terminal state
-    curr_state = functions.get_start_state(states)
+    # curr_state = functions.get_start_state(states)
+    curr_state = "Fairway"
     terminal_state = "In"
     score = 0
     i = 1
@@ -36,7 +38,7 @@ def explore(data, states, actions, q):
         next_state_dict = data[curr_state][random_action]  # ==> return dictionary
         next_state_list = list(next_state_dict.keys())
         probs = functions.generate_pdf(next_state_dict)
-        print(probs)
+
 
         # now, we have to use probabilities given to choose next state
         next_state = next_state_list[np.random.choice(len(next_state_dict), 1, p=probs)[0]]  # this might need len-1
@@ -48,19 +50,21 @@ def explore(data, states, actions, q):
         action_index = actions.index(random_action)
 
         # TODO: calculations. These calculation will update the Q value for that state, action pair
-        if next_state == terminal_state:
-            q[state_index, action_index] = q[state_index, action_index] * (1 - 0.1)
-        else:
-            next_state_index = states.index(next_state)
-            q[state_index, action_index] = q[state_index, action_index] * (1 - 0.1) + \
-                0.1 * (curr_reward + .99 * np.max(q[next_state_index, :]))
 
+        next_state_index = states.index(next_state)
+        q[state_index, action_index] = q[state_index, action_index] * (1 - lr) + \
+            lr * (curr_reward + discount * np.max(q[next_state_index, :]))
+
+        # print(curr_state, "-->", next_state)
+        # print(random_action)
+        # print(q[state_index, action_index] * (1 - lr) + \
+        #       lr * (curr_reward + discount * np.max(q[next_state_index, :])))
         curr_state = next_state
 
     # print(score)
 
 
-def exploit(data, states, actions, q): # pick action with max q val (max utility)
+def exploit(data, states, actions, q, lr, discount):  # pick action with max q val (max utility)
     pass
 
 
@@ -86,19 +90,29 @@ def __main__():
     max_exploration_rate = 1.0
     min_exploration_rate = .01
     exploration_decay_rate = .01
-
+    lr = 0.1  # learning rate
+    discount = 0  # set an initial discount value
     total_rewards = []
+    explore_count = 0
+    exploit_count = 0
 
-    #  100 episodes
-    # for i in range(10000):
-    #     if random.uniform(0, 1) < epsilon:
-    #         explore(data, states, actions, q)
-    #     else:
-    #         exploit(data, states, actions, q)
-    #     epsilon = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
-    #         np.exp(-exploration_decay_rate * i)  # i denotes the current 'episode'
+    #  100 episodes to test
+    for i in range(100):
+        if random.uniform(0, 1) < epsilon:
+            explore(data, states, actions, q, lr, discount)
+            explore_count += 1
+            # change epsilon value after exploring
+        else:
+            exploit(data, states, actions, q, lr, discount)
+            exploit_count += 1
+        #epsilon = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
+            np.exp(-exploration_decay_rate * i)  # i denotes the current 'episode' ==> this is also messing up
 
-    print(q)
+    # print("states in rows:", states)
+    # print("actions in columns:", actions)
+    # print(q)
+    # print(explore_count)
+    # print(exploit_count)
 
         # step 1: use epsilon to choose explore vs exploit
         # step 2: choose start state (randomly?)
