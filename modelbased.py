@@ -57,7 +57,7 @@ def exploit(transitions, transition_prob, state, data, utilities):
 
 def get_best_utility(state, transition_prob, utilities):
     reward = 1 # reward is fixed at 1 for each stroke
-    discountval = .9 # 0 - immediate reward / 1 - later reward 
+    discountval = .1 # 0 - immediate reward / 1 - later reward 
 
     different = True # boolean used to determine if more value iterations are needed
     actionsums = {} # holds the possible utilities for each action {a : utility val} for given state
@@ -114,10 +114,14 @@ def __main__():
             else:
                 state = exploit(transitions, transition_prob, state, data, utilities)
             epsilon = epsilon - explore_decay_rate
+    #print("-----------")
+    #print(utilities)
     print("-----------")
-    print(transition_prob)
-    print("-----------")
-    print(utilities)
+    print("Transition Probabilities for State, Action, State' :")
+    for s in transition_prob.keys():
+        for a in transition_prob[s].keys():
+            for ns in transition_prob[s][a].keys():
+                print(s + ", " + a + ", " + ns + " : " + str(transition_prob[s][a][ns]))
     print("-----------")
     print("Policy:")
 
