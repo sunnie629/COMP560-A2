@@ -103,7 +103,7 @@ def accept_input():
     return states
 
 
-def transition_table_init():
+def transition_table_init(): # values all init to 0
     file_ = fileinput.input()  # reading file from STDIN
 
     states = {} # dict of {s: {a : {s' : prob}}}
@@ -136,4 +136,16 @@ def transition_table_init():
             states[word[0]].update({word[1]: {} })
             states[word[0]][word[1]].update({word[2] : 0})
 
+    return states
+
+def utility_table_init():
+    file_ = fileinput.input()  # reading file from STDIN
+
+    states = {} # dict of {s: 0}
+
+    # file reading & set up of states dictionary
+    for x in file_:
+        word = x.split('/')
+        states[word[0]] = 0
+    states.update({"In" : 1})
     return states
