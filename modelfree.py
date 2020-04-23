@@ -61,11 +61,47 @@ def explore(data, states, actions, q, lr, discount):
         #       lr * (curr_reward + discount * np.max(q[next_state_index, :])))
         curr_state = next_state
 
-    # print(score)
 
 
 def exploit(data, states, actions, q, lr, discount):  # pick action with max q val (max utility)
-    pass
+
+    curr_state = "Fairway"
+    terminal_state = "In"
+    score = 0
+    i = 1
+
+    while curr_state != terminal_state:
+        # when exploiting, when choose the BEST rated action for curr_state
+        state_index = states.index(curr_state)
+        action_index = np.where(q == np.max(q[state_index, :]))
+        if len(action_index[1]) > 6:
+            random_actions_available = list(data[curr_state].keys())  # will return all actions available to this state.
+            curr_action = random_actions_available[random.randint(0, len(random_actions_available)-1)]
+        elif len(action_index[1]) > 1:
+            curr_action = actions[action_index[1][random.randint(0, len(action_index[1])-1)]]
+        else:
+            curr_action = actions[action_index[1][0]]
+
+        #
+        next_state_dict = data[curr_state][curr_action]  # ==> return dictionary
+        next_state_list = list(next_state_dict.keys())
+        probs = functions.generate_pdf(next_state_dict)
+
+        #
+        next_state = next_state_list[np.random.choice(len(next_state_dict), 1, p=probs)[0]]  # this might need len-1
+        curr_reward = functions.get_reward(next_state, i)
+        score += curr_reward
+        i += 1
+
+        # define indices for Q table
+        state_index = states.index(curr_state)
+        action_index = actions.index(curr_action)
+
+        next_state_index = states.index(next_state)
+        q[state_index, action_index] = q[state_index, action_index] * (1 - lr) + \
+            lr * (curr_reward + discount * np.max(q[next_state_index, :]))
+
+        curr_state = next_state
 
 
 def __main__():
@@ -89,15 +125,15 @@ def __main__():
     epsilon = 1.0  # epsilon denotes the explore rate
     max_exploration_rate = 1.0
     min_exploration_rate = .01
-    exploration_decay_rate = .01
-    lr = 0.1  # learning rate
-    discount = 0  # set an initial discount value
+    exploration_decay_rate = .0001
+    lr = 0.1  # how much Q will change at each iteration
+    discount = 0  # set an initial discount value. "how much we weigh future trials in Q learning"
     total_rewards = []
     explore_count = 0
     exploit_count = 0
 
     #  100 episodes to test
-    for i in range(100):
+    for i in range(10000):
         if random.uniform(0, 1) < epsilon:
             explore(data, states, actions, q, lr, discount)
             explore_count += 1
@@ -105,14 +141,15 @@ def __main__():
         else:
             exploit(data, states, actions, q, lr, discount)
             exploit_count += 1
-        #epsilon = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
-            np.exp(-exploration_decay_rate * i)  # i denotes the current 'episode' ==> this is also messing up
+              # i denotes the current 'episode' ==> this is also messing up
+        epsilon = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
+                  np.exp(-exploration_decay_rate * i)
 
-    # print("states in rows:", states)
-    # print("actions in columns:", actions)
-    # print(q)
-    # print(explore_count)
-    # print(exploit_count)
+    print("states in rows:", states)
+    print("actions in columns:", actions)
+    print(q)
+    print(explore_count)
+    print(exploit_count)
 
         # step 1: use epsilon to choose explore vs exploit
         # step 2: choose start state (randomly?)
