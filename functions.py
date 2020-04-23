@@ -30,14 +30,12 @@ def generate_pdf(state_probs):
 
 
 def get_reward(state, count):
-    # if state == "Ravine":
-    #     return 0/count
-    # elif state == "Over":
-    #     return 0/count
-    # elif state == "Same":
-    #     return 0/count
-    # elif state == "Left":
-    #     return 0/count
+
+    # if state == "In":
+    #     return 1
+    # else:
+    #     return 0
+
     if state == "Close":
         return 0.5/count
     elif state == "In":
@@ -48,17 +46,24 @@ def get_reward(state, count):
 
 
 def get_states(data):
-    states = []
+    states = set()
     for key in data.keys():
-        states.append(key)
-    return states
+        states.add(key)
+        for value in data[key].values():
+            for state in value.keys():
+                states.add(state)
+
+    return list(states)
 
 
 def get_actions(data, states):
     actions = set()
     for state in states:
-        for action in data[state].keys():
-            actions.add(action)
+        if data.get(state) is None:
+            continue
+        else:
+            for action in data[state].keys():
+                actions.add(action)
     return list(actions)
 
 
