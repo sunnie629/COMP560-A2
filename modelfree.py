@@ -104,7 +104,7 @@ def __main__():
 
     #  100 episodes to test
     for i in range(10000):
-        do_step(data, states, actions, q, lr, discount, epsilon, explore_count, exploit_count)
+        do_step(data, states, actions, q, lr, discount, epsilon)
         epsilon = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
             np.exp(-exploration_decay_rate * i)
 
