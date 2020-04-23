@@ -37,37 +37,76 @@ def explore(transitions, transition_prob, state, data): # each time record start
     
 
 # TODO: exploitation
-def exploit(state):
+def exploit(transitions, transition_prob, state, data, utilities):
     # get utility 
-    # choose action w max utility
-    return state
+    a = get_utility(state, transition_prob, utilities)
+    # choose action w min utility
+    arr = [] # temp arr used to select resulting state
+    for x in data[state][a].keys():  # give weight to probabilities
+        num = data[state][a][x] * 100
+        for i in range(int(num)):
+            arr.append(x)
+    newstate = random.choice(arr) # choose state based on probabilities
+     
+    transitions[state][a].update({newstate : transitions[state][a][newstate] + 1}) # increase frequency of s,a,s'
+    # transition probability : s, a, s'
+    #print(state + ' ' + a + ' ' + newstate)
+
+    # converting frequencies to transition probabilities
+    reltotal = 0
+    for x in transitions[state][a].keys():
+        reltotal = reltotal + transitions[state][a][x]
+    if reltotal != 0:
+        for x in transitions[state][a].keys():
+            transition_prob[state][a][x] = transitions[state][a][x]/reltotal
+    return newstate
 
 #TODO: figure out equation for utility and picking best policy
-def get_utility(state, action, newstate):
+def get_utility(state, transition_prob, utilities):
+    #utilities = {}
     reward = 1
-    discountval = 0 # 0 - immediate reward / 1 - later reward /// diminished reward over time
-    # Bellman's equation for estimating utility: U(s) = R(s) + (discountval * max(sum(transitionprob(s,a,s')) * U(s'))
+    discountval = .9 # 0 - immediate reward / 1 - later reward /// diminished reward over time
+    # Bellman's equation for estimating utility: U(s) = R(s) + (discountval * max(sum(transitionprob(s,a,s') * U(s')))
     sum = 0 # sum over s'
-    utility = reward + discountval * max( ) * get_utility()
+    actionsums = {}
+    for a in transition_prob[state].keys():
+        for ns in transition_prob[state][a].keys():
+            sum = sum + transition_prob[state][a][ns] * utilities[ns]
+        actionsums.update({a : sum})
+    print(actionsums)
+    sum = min(actionsums.values())
+    print(sum)
+    action = ""
+    for a in actionsums.keys():
+        if actionsums[a] == sum:
+            action = a
+    utilities[state] = reward + (discountval * (sum))
+    print(utilities)
+    return a
+
+def get_policy():
+    # backpropogate to get policy
+    policy = {} # dict of state : action that will be returned at the end
+    pass
 
 def __main__():
     data = functions.accept_input()  # initialize the dictionary with values from the .txt input
-    states = functions.get_states(data)  # states is a list
     transition_prob = functions.transition_table_init() # dict that will store the transition prob P(s'|s,a)
     transitions = functions.transition_table_init() # helper dictionary to store frequencies (not probabilties)
+    utilities = functions.utility_table_init()
 
     epsilon = 1 # explore rate  
-    explore_decay_rate = .0
-    for i in range(10):
+    explore_decay_rate = .02
+    for i in range(100):
         state = "Fairway"
         while state != "In":
             if random.uniform(0, 1) < epsilon:
                 state = explore(transitions, transition_prob, state, data)
             else:
-                state = exploit(state)
+                state = exploit(transitions, transition_prob, state, data, utilities)
             epsilon = epsilon - explore_decay_rate
         #print(transitions)
-        #print(transition_prob)
+    #print(transition_prob)
             
    
     
