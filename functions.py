@@ -97,6 +97,7 @@ def accept_input():
 
     return states
 
+
 def transition_table_init():
     file_ = fileinput.input()  # reading file from STDIN
 

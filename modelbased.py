@@ -9,6 +9,7 @@ import fileinput
 import random
 import functions
 
+
 def explore(transition_prob, states, data):
     data = data 
     iter = 500 # number of iterations to record frequency; higher - more accurate
