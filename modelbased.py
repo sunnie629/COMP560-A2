@@ -19,7 +19,7 @@ def explore(transitions, transition_prob, state, data): # each time record start
         for i in range(int(num)):
             arr.append(x)
     newstate = random.choice(arr) # choose state based on probabilities
-    
+
     transitions[state][a].update({newstate : transitions[state][a][newstate] + 1}) # increase frequency of s,a,s'
     #print(state + ' ' + a + ' ' + newstate)
 
@@ -32,12 +32,17 @@ def explore(transitions, transition_prob, state, data): # each time record start
             transition_prob[state][a][x] = transitions[state][a][x]/reltotal
 
     return newstate
-    
+
 
 # TODO: exploitation
 def exploit(transitions, transition_prob, state, data, utilities):
+<<<<<<< HEAD
     # get utility 
     a = get_best_utility(state, transition_prob, utilities)
+=======
+    # get utility
+    a = get_utility(state, transition_prob, utilities)
+>>>>>>> 59b687c6fd314b801579d65b2e4e480a536e926e
     # choose action w min utility
     arr = [] # temp arr used to select resulting state
     for x in data[state][a].keys():  # give weight to probabilities
@@ -45,7 +50,7 @@ def exploit(transitions, transition_prob, state, data, utilities):
         for i in range(int(num)):
             arr.append(x)
     newstate = random.choice(arr) # choose state based on probabilities
-     
+
     transitions[state][a].update({newstate : transitions[state][a][newstate] + 1}) # increase frequency of s,a,s'
     # transition probability : s, a, s'
     #print(state + ' ' + a + ' ' + newstate)
@@ -100,8 +105,13 @@ def __main__():
     transitions = functions.transition_table_init() # helper dictionary to store frequencies (not probabilties)
     utilities = functions.utility_table_init() # dictionary to store utility values {s: U(s)}
 
+<<<<<<< HEAD
     epsilon = 1 # explore rate  
     explore_decay_rate = .01
+=======
+    epsilon = 1 # explore rate
+    explore_decay_rate = .02
+>>>>>>> 59b687c6fd314b801579d65b2e4e480a536e926e
     for i in range(100):
         state = "Fairway"
         while state != "In":
@@ -113,9 +123,9 @@ def __main__():
             epsilon = epsilon - explore_decay_rate
         #print(transitions)
     #print(transition_prob)
-            
-   
-    
+
+
+
 
 if __name__ == '__main__':
     __main__()
