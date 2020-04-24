@@ -1,4 +1,4 @@
-# COMP560 A2 - MODEL BASED LEARNING // Sunnie Kwak
+# COMP560 A2 - MODEL BASED LEARNING // Sunnie Kwak, Jacob Gersfeld, Kinsey Ness
 # Goal: know the policy--> calculate transition and reward
 # keep track of how many times s' follows state s when you take action a
 # update transition probability after you're in the new end state

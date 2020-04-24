@@ -1,13 +1,26 @@
 import fileinput
 import numpy as np
 
-# formula for updating Q values in Q table:
-#         q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
-#             learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
 
-# formula for updating the explore rate over time:
-# exploration_rate = min_exploration_rate + (max_exploration_rate - min_exploration_rate) * \
-#         np.exp(-exploration_decay_rate * episode)
+def print_mf_policy(q, data, states, actions):
+    print("Policy:")
+    for state in list(data.keys()):
+        state_index = states.index(state)
+        action_index = np.argmax(q[state_index, :])
+        print(states[state_index], "-->", actions[action_index])
+
+
+def print_mf_utilities(q, data, states, actions):
+    print("Utilities:")
+    for state in data.keys():
+        if state == "In":
+            continue
+        for action in data[state]:
+            state_index = states.index(state)
+            action_index = actions.index(action)
+            q_val = q[state_index][action_index]
+            for next_state in data[state][action]:
+                print(state, ",", action, ",", next_state, ":", data[state][action][next_state]*q_val)
 
 
 def create_q_table(states_length, actions_length):
@@ -30,11 +43,6 @@ def generate_pdf(state_probs):
 
 
 def get_reward(state, count):
-
-    # if state == "In":
-    #     return 1
-    # else:
-    #     return 0
 
     if state == "Close":
         return 0.5/count
@@ -138,10 +146,11 @@ def transition_table_init(): # values all init to 0
 
     return states
 
+
 def utility_table_init():
     file_ = fileinput.input()  # reading file from STDIN
 
-    states = {} # dict of {s: 0}
+    states = {}  # dict of {s: 0}
 
     # file reading & set up of states dictionary
     for x in file_:
