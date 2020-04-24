@@ -22,7 +22,7 @@ def explore(transitions, transition_prob, state, data, utilities):
 
     transitions[state][a].update({newstate : transitions[state][a][newstate] + 1}) # increase frequency of s,a,s'
     # converting frequencies to transition probabilities and recording that in transition probability dict
-    reltotal = 0
+    reltotal = 0 # reltotal is the total frequencies given for an action, given s
     for x in transitions[state][a].keys():
         reltotal = reltotal + transitions[state][a][x] 
     if reltotal != 0:
@@ -58,7 +58,7 @@ def exploit(transitions, transition_prob, state, data, utilities):
 
 def get_best_utility(state, transition_prob, utilities):
     reward = 1 # reward is fixed at 1 for each stroke
-    discountval = .7 # 0 - immediate reward / 1 - later reward 
+    discountval = .8 # 0 - immediate reward / 1 - later reward 
 
     different = True # boolean used to determine if more value iterations are needed
     actionsums = {} # holds the possible utilities for each action {a : utility val} for given state
@@ -85,59 +85,44 @@ def get_best_utility(state, transition_prob, utilities):
         if actionsums[a] == sum: # get action of that minimum value (optimal action)
             action = a
             break
-    #print(state)     
-    #print(actionsums)
     return action
 
 def get_policy(state, transition_prob, utilities, data): # print optimal action to take for each state
-    for s in utilities.keys():
+    for s in utilities.keys(): # use utility values to get optimal action
         if s != "In":
             a = get_best_utility(s, transition_prob, utilities)
             print(s + " -> " + a)
             
-   
 def __main__():
     data = functions.accept_input()  # initialize the dictionary with values from the .txt input
     transition_prob = functions.transition_table_init() # dict that will store the transition prob P(s'|s,a)
     transitions = functions.transition_table_init() # helper dictionary to store frequencies (not probabilties)
     utilities = functions.utility_table_init() # dictionary to store utility values {s: U(s)}
 
-    epsilon = 10000 # number of iterations
+    epsilon = 100000 # number of iterations
     exploration_rate = 1
     min_exploration_rate = 1/(epsilon*100) # minimum chance of exploring
     explore_decay_rate = 1/(epsilon*10) # decay rate that will decrease exploration rate with every iteration
-    #a= 0
-    #b = 0
     for i in range(epsilon):
         state = "Fairway"
         while state != "In":
-            #print(state)
             if random.uniform(0, 1) < exploration_rate + min_exploration_rate:
                 state = explore(transitions, transition_prob, state, data, utilities)
-                #a = a +1
-                #print("lore")
             else:
                 state = exploit(transitions, transition_prob, state, data, utilities)
-                #b = b+1
-                #print("loit")
             exploration_rate = exploration_rate - explore_decay_rate
             explore_decay_rate = explore_decay_rate + explore_decay_rate/(epsilon*1.75) # increases decay rate over time
-    #print(a)
-    #print(b)
-    #print("   ")
-    #print(utilities)
-    print("-----------")
-    print("Transition Probabilities for State, Action, State' :")
+   
+    print("--------------")
+    print("Transition Probabilities for State, Action, State' :") # printing Trans. Prob. for each s,a,s' triplet
     for s in transition_prob.keys():
         for a in transition_prob[s].keys():
             for ns in transition_prob[s][a].keys():
                 print(s + ", " + a + ", " + ns + " : " + str(transition_prob[s][a][ns]))
-    print("-----------")
-    print("Policy:")
-
-    get_policy(state, transition_prob, utilities, data) # get_policy makes use of exploit function
+    print("--------------")
+    print("POLICY:")
+    get_policy(state, transition_prob, utilities, data) # get final policy based on learning
       
-
 
 if __name__ == '__main__':
     __main__()
